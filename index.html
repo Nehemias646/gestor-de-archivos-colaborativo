@@ -1,0 +1,820 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Plataforma de Contratos - Estilo Collage</title>
+    <!-- Carga de Tailwind CSS para utilidades -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Carga de Google Fonts para tipografía de máquina de escribir y manuscrito -->
+    <link href="https://fonts.googleapis.com/css2?family=Courier+Prime:wght@400;700&family=Permanent+Marker&display=swap" rel="stylesheet">
+    <style>
+        /* CONFIGURACIÓN DE COLOR Y FUENTE PARA TAILWIND */
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        'craft-bg': '#F7E7C3', /* Color de papel craft claro */
+                        'newspaper-bg': '#E0E0D7', /* Gris claro/crema de periódico viejo */
+                        'ink-black': '#1E1E1E', /* Tinta oscura */
+                        'highlight-red': '#C0392B', /* Un toque de rojo (simulando un sello) */
+                        'paper-white': '#FFFFFF',
+                    },
+                    fontFamily: {
+                        mono: ['"Courier Prime"', 'monospace'], /* Para simular texto de máquina de escribir */
+                        marker: ['"Permanent Marker"', 'cursive'], /* Para simular títulos a mano */
+                    }
+                }
+            }
+        }
+
+        /* ESTILOS PERSONALIZADOS PARA TEXTURAS Y COLLAGE */
+        body {
+            font-family: 'Courier Prime', monospace;
+            background-color: #f7e7c3; /* Fondo de papel craft */
+            background-image: repeating-linear-gradient(
+                -45deg,
+                #f7e7c3 0%,
+                #f7e7c3 50%,
+                rgba(0, 0, 0, 0.03) 50%,
+                rgba(0, 0, 0, 0.03) 100%
+            ); 
+            background-size: 4px 4px;
+            min-height: 100vh;
+        }
+
+        .main-container {
+            /* Contenedor principal para el efecto de hoja pegada */
+            background-color: var(--tw-colors-newspaper-bg);
+            box-shadow: 10px 10px 25px rgba(0, 0, 0, 0.4);
+            transform: rotate(-1deg); /* Gran rotación */
+            border: 4px solid var(--tw-colors-ink-black);
+            transition: transform 0.5s ease;
+        }
+        .main-container:hover {
+             transform: rotate(-1deg) translateY(-2px);
+        }
+
+        .paper-clip {
+            /* Estilo base para elementos de "papel" internos */
+            box-shadow: 5px 5px 10px rgba(0, 0, 0, 0.15);
+            border-radius: 4px;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+        .paper-clip:hover {
+            transform: translateY(-2px) rotate(0.5deg);
+            box-shadow: 7px 7px 12px rgba(0, 0, 0, 0.25);
+        }
+
+        .newspaper-style {
+            background-color: var(--tw-colors-newspaper-bg);
+            /* Simulación de la textura del periódico */
+            border: 2px solid #555;
+            transform: rotate(2deg); 
+            padding: 1.5rem;
+        }
+        
+        .craft-note {
+            background-color: var(--tw-colors-craft-bg);
+            border: 2px dashed var(--tw-colors-highlight-red);
+            padding: 1.5rem;
+        }
+
+        .handwriting {
+            font-family: 'Permanent Marker', cursive;
+            color: var(--tw-colors-highlight-red);
+        }
+        
+        /* Animación de entrada sutil (Fade in and drop) */
+        @keyframes fadeInDrop {
+            from { opacity: 0; transform: translateY(-20px) rotate(0deg); }
+            to { opacity: 1; transform: translateY(0) rotate(0deg); }
+        }
+        .animate-in {
+            animation: fadeInDrop 0.8s ease-out both;
+        }
+        
+        /* ESTILOS DE LOS BOTONES Y TABS */
+        .tab-button {
+            padding: 10px 20px;
+            cursor: pointer;
+            border-bottom: 3px solid transparent;
+            font-weight: 700;
+            transition: all 0.3s ease;
+        }
+        .tab-button.active {
+            color: var(--tw-colors-highlight-red);
+            border-bottom-color: var(--tw-colors-highlight-red);
+            background-color: var(--tw-colors-craft-bg);
+        }
+        .tab-button:not(.active):hover {
+            color: var(--tw-colors-ink-black);
+            background-color: #f0f0e8;
+        }
+        
+        /* Contenido de la sección de pestañas */
+        .section-content {
+            opacity: 0;
+            max-height: 0;
+            overflow: hidden;
+            transition: opacity 0.5s ease-in-out, max-height 0.5s ease-in-out;
+        }
+        .section-content.active {
+            opacity: 1;
+            max-height: 3000px; /* Suficiente para el contenido */
+            padding-top: 2rem;
+        }
+        
+        /* Botón del Formulario (Simulación de Sello) */
+        .form-link-button {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px 40px;
+            font-size: 1.25rem;
+            font-weight: 700;
+            text-decoration: none;
+            border-radius: 8px;
+            background-color: var(--tw-colors-highlight-red);
+            color: white;
+            border: 4px double white;
+            transition: background-color 0.3s ease, transform 0.1s;
+            box-shadow: 0 5px 10px rgba(192, 57, 43, 0.5);
+            font-family: 'Permanent Marker', cursive;
+        }
+        .form-link-button:hover {
+            background-color: #A93226; 
+            transform: scale(1.02);
+        }
+        
+        /* Estilos de Iconos y Spinners */
+        .ai-loading-spinner {
+            border: 4px solid rgba(0, 0, 0, 0.1);
+            border-left-color: var(--tw-colors-ink-black);
+            border-radius: 50%;
+            width: 20px;
+            height: 20px;
+            animation: spin 1s linear infinite;
+            display: inline-block;
+            margin-right: 8px;
+        }
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+    </style>
+</head>
+<body class="p-4 md:p-12 text-ink-black">
+
+    <div class="container mx-auto max-w-5xl">
+        <header class="text-center mb-10 animate-in">
+            <h1 class="text-4xl md:text-5xl font-marker text-ink-black border-b-4 border-ink-black inline-block px-4 pb-2 transform rotate-[-2deg]">
+                Contratos Familiares: El Tablero de Anuncios
+            </h1>
+            <p class="text-gray-700 mt-2 text-lg font-mono transform rotate-[1deg] italic">Compromisos Públicos y Análisis IA</p>
+        </header>
+
+        <!-- Contenedor Principal con Estilo Collage/Periódico -->
+        <div class="main-container p-4 md:p-8 rounded-xl animate-in">
+
+            <!-- Navegación de Pestañas Estilizada -->
+            <div class="bg-gray-100 p-2 rounded-t-lg shadow-inner border-b-4 border-ink-black">
+                <div class="flex">
+                    <button id="tab-submission" class="tab-button active" onclick="switchSection('submission')">
+                        <span class="handwriting text-xl">1. Formulario de Enlace</span>
+                    </button>
+                    <button id="tab-viewing" class="tab-button" onclick="switchSection('viewing')">
+                        <span class="handwriting text-xl">2. Contratos Recibidos</span>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Contenido de las Pestañas -->
+            <div class="p-4 md:p-6">
+                
+                <!-- SECCIÓN 1: SUBIR CONTRATO (BOTÓN ESTILO PERIÓDICO) -->
+                <div id="submission-section" class="section-content active">
+                    <div class="newspaper-style paper-clip md:w-4/5 mx-auto animate-in transform rotate-[-3deg] shadow-2xl">
+                        <h2 class="text-2xl font-bold font-marker text-ink-black mb-6 text-center transform rotate-[1deg]">
+                            <span class="text-4xl">📎</span> ENLACE DE ENVÍO DE CONTRATO 
+                        </h2>
+                        
+                        <div class="p-4 bg-yellow-50 border-2 border-highlight-red rounded-lg mb-8 text-center font-mono">
+                            <p class="font-semibold text-highlight-red">IMPORTANTE:</p>
+                            <p class="text-sm text-gray-800 mt-2">
+                                Haz clic en el "Sello" para abrir el Google Form en una nueva pestaña y registrar tu compromiso.
+                            </p>
+                        </div>
+                        
+                        <!-- BOTÓN DE ENLACE DIRECTO AL FORMULARIO -->
+                        <div class="flex justify-center p-4">
+                            <a 
+                                href="https://docs.google.com/forms/d/e/1FAIpQLSek2m3M3oU5vajsstoF3RG44Hh7yt3qAiIG3bI5DoaKQm-eDA/viewform?usp=header" 
+                                target="_blank" 
+                                class="form-link-button">
+                                📝 ¡FIRMAR EL CONTRATO AHORA! 💥
+                            </a>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- SECCIÓN 2: VER CONTRATOS RECIBIDOS (VISTA DE FIREBASE Y GEMINI) -->
+                <div id="viewing-section" class="section-content">
+
+                    <!-- Sección de Control y Simulación -->
+                    <div class="bg-paper-white paper-clip p-4 rounded-xl shadow-lg mb-6 flex flex-col sm:flex-row justify-between items-center gap-4 transform rotate-[1deg]">
+                        <p class="text-sm text-gray-700 font-mono">
+                            Lista en tiempo real con datos de Firestore.
+                        </p>
+                        <button onclick="simulateSubmission()" class="bg-ink-black hover:bg-gray-800 text-white font-marker py-2 px-4 rounded-lg transition duration-300 shadow-md flex items-center justify-center w-full sm:w-auto transform hover:rotate-[-2deg]">
+                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor" class="w-5 h-5 mr-2">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
+                            </svg>
+                            Simular Envío (FireStore)
+                        </button>
+                    </div>
+
+                    <!-- Contenedor Principal: Lista y Detalle -->
+                    <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+
+                        <!-- Columna 1: Lista de Contratos (Barra Lateral) -->
+                        <div class="lg:col-span-1 bg-paper-white paper-clip p-4 rounded-xl shadow-lg h-96 overflow-y-auto border border-gray-300 transform rotate-[-0.5deg]">
+                            <h2 class="text-xl font-marker text-ink-black mb-4 border-b pb-2">📂 Contratos Válidos</h2>
+                            <div id="contract-list">
+                                <!-- Los contratos se cargarán aquí dinámicamente -->
+                                <p class="text-gray-500 text-sm italic" id="loading-list">Cargando contratos públicos...</p>
+                            </div>
+                        </div>
+
+                        <!-- Columna 2: Vista de Detalle del Contrato (Nota Craft) -->
+                        <div class="lg:col-span-2">
+                            <div id="contract-details" class="craft-note paper-clip rounded-xl min-h-full transform rotate-[1.5deg]">
+                                <h2 id="detail-title" class="text-2xl font-marker text-ink-black mb-4 border-b-2 border-ink-black pb-2">Selecciona un Contrato</h2>
+                                <p id="detail-instruction" class="text-gray-700 italic font-mono">¡Haz clic en un contrato de la lista izquierda para revisarlo!</p>
+                                
+                                <!-- Contenido detallado -->
+                                <div id="detail-content" class="space-y-4 mt-6 hidden">
+                                    
+                                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4 font-mono text-base">
+                                        <div><span class="font-bold text-ink-black">Miembro:</span> <span id="detail-member-name" class="text-gray-800"></span></div>
+                                        <div><span class="font-bold text-ink-black">Edad:</span> <span id="detail-age" class="text-gray-800"></span></div>
+                                    </div>
+
+                                    <div class="p-3 bg-paper-white rounded-lg border border-gray-400">
+                                        <p class="text-lg font-marker text-highlight-red mb-1">Tareas y Responsabilidades:</p>
+                                        <ul class="list-disc list-inside space-y-1 text-sm text-gray-700">
+                                            <li><span id="detail-task1"></span></li>
+                                            <li><span id="detail-task2"></span></li>
+                                            <li><span id="detail-task3"></span></li>
+                                        </ul>
+                                    </div>
+                                    
+                                    <!-- Sección de Afirmaciones -->
+                                    <div class="p-3 bg-paper-white rounded-lg border border-gray-400">
+                                        <p class="text-lg font-marker text-ink-black mb-1">Declaraciones "YO SOY..."</p>
+                                        <ul class="list-disc list-inside space-y-1 text-sm text-gray-700">
+                                            <li><span id="detail-affirmation1"></span></li>
+                                            <li><span id="detail-affirmation2"></span></li>
+                                            <li><span id="detail-affirmation3"></span></li>
+                                        </ul>
+                                    </div>
+                                    
+                                    <!-- Sección de Integración Gemini -->
+                                    <div class="pt-4 border-t-2 border-ink-black mt-4 space-y-3">
+                                        <h3 class="text-2xl font-marker text-ink-black transform rotate-[-1deg]">
+                                            ✨ Análisis y Refuerzo IA
+                                        </h3>
+                                        
+                                        <!-- Botones Gemini (Estilo Sello) -->
+                                        <div class="flex flex-col sm:flex-row gap-3">
+                                            <button id="summary-btn" onclick="generateSummary()" class="py-2 px-4 rounded-lg transition duration-300 shadow-md flex items-center justify-center w-full sm:w-auto disabled:opacity-50 bg-highlight-red text-white font-marker hover:bg-red-700">
+                                                <span class="mr-2">📄</span> Generar Resumen
+                                            </button>
+                                            <button id="suggestion-btn" onclick="suggestContractImprovement()" class="py-2 px-4 rounded-lg transition duration-300 shadow-md flex items-center justify-center w-full sm:w-auto disabled:opacity-50 bg-blue-800 text-white font-marker hover:bg-blue-900">
+                                                <span class="mr-2">💡</span> Sugerir Mejora
+                                            </button>
+                                            <button id="tts-btn" onclick="speakAffirmation()" class="py-2 px-4 rounded-lg transition duration-300 shadow-md flex items-center justify-center w-full sm:w-auto disabled:opacity-50 bg-ink-black text-white font-marker hover:bg-gray-800">
+                                                <span class="mr-2">🔊</span> Refuerzo Positivo (Voz)
+                                            </button>
+                                            <audio id="tts-audio" class="hidden" controls></audio>
+                                        </div>
+
+                                        <!-- Área de Resumen/Feedback de IA -->
+                                        <div id="ai-output" class="p-4 bg-newspaper-bg rounded-lg border-2 border-ink-black hidden transform rotate-[0.5deg]">
+                                            <p class="font-marker text-lg text-ink-black mb-2">Comentario de la IA:</p>
+                                            <p id="ai-text" class="text-gray-800 italic text-sm">Esperando el análisis de Gemini...</p>
+                                            <div id="ai-sources" class="text-xs text-gray-600 mt-2 border-t border-gray-400 pt-1 hidden">
+                                                Fuentes: <ul id="sources-list" class="list-disc list-inside"></ul>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+
+    <!-- Toast para mensajes de estado -->
+    <div id="statusToast" class="fixed bottom-4 right-4 p-3 rounded-lg text-white shadow-xl transition-opacity duration-300 opacity-0 pointer-events-none"></div>
+
+<script type="module">
+    // -------------------------------------------------------------------------
+    // CONFIGURACIÓN DE FIREBASE Y GEMINI API
+    // -------------------------------------------------------------------------
+
+    // Variables globales de Canvas
+    const appId = typeof __app_id !== 'undefined' ? __app_id : 'default-app-id';
+    const firebaseConfig = typeof __firebase_config !== 'undefined' ? JSON.parse(__firebase_config) : null;
+    const initialAuthToken = typeof __initial_auth_token !== 'undefined' ? __initial_auth_token : null;
+    const apiKey = ""; // La clave se proporcionará automáticamente en el entorno de Canvas.
+
+    // Importar Firebase SDKs
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
+    import { getAuth, signInAnonymously, signInWithCustomToken, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+    import { getFirestore, doc, collection, addDoc, onSnapshot, query, setDoc } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+    import { setLogLevel } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+
+    // setLogLevel('Debug'); // Descomentar para depuración
+
+    let db;
+    let auth;
+    let userId = null;
+    let isAuthReady = false;
+    let currentContractData = null; // Almacena los datos del contrato seleccionado
+    
+    // Rutas
+    const PUBLIC_COLLECTION_PATH = `artifacts/${appId}/public/data/submitted_contracts`;
+    const GEMINI_TEXT_API = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-09-2025:generateContent?key=${apiKey}`;
+    const GEMINI_TTS_API = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-tts:generateContent?key=${apiKey}`;
+
+    // 1. Elementos del DOM
+    const contractListEl = document.getElementById('contract-list');
+    const detailTitleEl = document.getElementById('detail-title');
+    const detailInstructionEl = document.getElementById('detail-instruction');
+    const detailContentEl = document.getElementById('detail-content');
+    const statusToastEl = document.getElementById('statusToast');
+    const aiOutputEl = document.getElementById('ai-output');
+    const aiTextEl = document.getElementById('ai-text');
+    const summaryBtn = document.getElementById('summary-btn');
+    const ttsBtn = document.getElementById('tts-btn');
+    const suggestionBtn = document.getElementById('suggestion-btn'); // NUEVO BOTÓN
+    const aiSourcesEl = document.getElementById('ai-sources'); // NUEVA ZONA DE FUENTES
+    const sourcesListEl = document.getElementById('sources-list'); // NUEVA LISTA DE FUENTES
+
+    let detailFields = {
+        memberName: document.getElementById('detail-member-name'),
+        age: document.getElementById('detail-age'),
+        task1: document.getElementById('detail-task1'),
+        task2: document.getElementById('detail-task2'),
+        task3: document.getElementById('detail-task3'),
+        affirmation1: document.getElementById('detail-affirmation1'),
+        affirmation2: document.getElementById('detail-affirmation2'),
+        affirmation3: document.getElementById('detail-affirmation3'),
+    };
+
+    // Función para cambiar de sección (pestaña)
+    window.switchSection = (sectionId) => {
+        // Desactivar todas las secciones y tabs
+        document.getElementById('submission-section').classList.remove('active');
+        document.getElementById('viewing-section').classList.remove('active');
+        document.getElementById('tab-submission').classList.remove('active');
+        document.getElementById('tab-viewing').classList.remove('active');
+
+        // Activar la sección y el tab seleccionados
+        if (sectionId === 'submission') {
+            document.getElementById('submission-section').classList.add('active');
+            document.getElementById('tab-submission').classList.add('active');
+        } else if (sectionId === 'viewing') {
+            document.getElementById('viewing-section').classList.add('active');
+            document.getElementById('tab-viewing').classList.add('active');
+        }
+    };
+
+    // Función para mostrar mensajes de estado (Toast)
+    const showToast = (message, isError = false) => {
+        statusToastEl.textContent = message;
+        statusToastEl.className = `fixed bottom-4 right-4 p-3 rounded-lg text-white shadow-xl transition-opacity duration-300 toast-show ${isError ? 'bg-highlight-red' : 'bg-ink-black'}`;
+        statusToastEl.style.opacity = '1';
+        setTimeout(() => {
+            statusToastEl.style.opacity = '0';
+        }, 4000);
+    };
+
+    // 2. Inicializar Firebase y Autenticación
+    const initializeFirebase = async () => {
+        if (!firebaseConfig) {
+            console.error("Firebase configuration not available.");
+            showToast("Error: Configuración de Firebase no encontrada.", true);
+            return;
+        }
+
+        try {
+            const app = initializeApp(firebaseConfig);
+            db = getFirestore(app);
+            auth = getAuth(app);
+            
+            if (initialAuthToken) {
+                await signInWithCustomToken(auth, initialAuthToken);
+            } else {
+                await signInAnonymously(auth);
+            }
+
+            onAuthStateChanged(auth, (user) => {
+                if (user) {
+                    userId = user.uid;
+                    isAuthReady = true;
+                    console.log("Firestore initialized. User ID:", userId);
+                    showToast("Conexión pública lista.", false);
+                    listenForPublicContracts();
+                } else {
+                    console.error("Authentication failed.");
+                    showToast("Error de autenticación. No se pueden cargar los contratos.", true);
+                }
+            });
+
+        } catch (error) {
+            console.error("Error initializing Firebase or signing in:", error);
+            showToast("Error al iniciar la aplicación. Revise su configuración Firebase.", true);
+        }
+    };
+
+    // 3. Listener en Tiempo Real para Contratos Públicos
+    const listenForPublicContracts = () => {
+        if (!isAuthReady) return;
+
+        const contractsQuery = query(collection(db, PUBLIC_COLLECTION_PATH));
+
+        onSnapshot(contractsQuery, (snapshot) => {
+            contractListEl.innerHTML = '';
+            
+            if (snapshot.empty) {
+                document.getElementById('loading-list').textContent = 'No hay contratos públicos aún. ¡Simula uno!';
+                return;
+            } else {
+                document.getElementById('loading-list').remove();
+            }
+
+            // Crear un botón por cada contrato
+            snapshot.docs.forEach(doc => {
+                const data = doc.data();
+                const contractId = doc.id;
+                const memberName = data.memberName || 'Miembro Desconocido';
+                
+                const button = document.createElement('button');
+                button.textContent = `Contrato de: ${memberName}`;
+                button.className = 'w-full text-left p-3 my-1 bg-craft-bg text-ink-black rounded-lg hover:bg-yellow-200 transition duration-150 border border-ink-black shadow-md font-mono';
+                
+                // Añadir el evento de clic para mostrar detalles
+                button.onclick = () => displayContractDetails(data, contractId);
+                
+                contractListEl.appendChild(button);
+            });
+            showToast(`Cargados ${snapshot.size} contratos.`, false);
+        }, (error) => {
+            console.error("Error listening to public contracts:", error);
+            showToast("Error de conexión al obtener contratos públicos.", true);
+        });
+    };
+
+    // 4. Función para mostrar los detalles del contrato seleccionado
+    const displayContractDetails = (data, id) => {
+        currentContractData = data; // Almacenar los datos para las funciones de Gemini
+        
+        // Habilitar botones de Gemini y resetear área de IA
+        summaryBtn.disabled = false;
+        suggestionBtn.disabled = false;
+        ttsBtn.disabled = false;
+        aiOutputEl.classList.add('hidden');
+        aiTextEl.textContent = 'Esperando el análisis de Gemini...';
+        aiSourcesEl.classList.add('hidden');
+        sourcesListEl.innerHTML = '';
+        ttsAudioEl.classList.add('hidden');
+        
+        // Ocultar mensaje de instrucción
+        detailInstructionEl.classList.add('hidden');
+        
+        // Actualizar el título
+        const memberName = data.memberName || 'Miembro Desconocido';
+        detailTitleEl.textContent = `📝 Contrato de ${memberName}`;
+        
+        // Rellenar los campos de detalle
+        for (const key in detailFields) {
+            if (detailFields[key]) {
+                detailFields[key].textContent = data[key] || 'N/A';
+            }
+        }
+        
+        // Mostrar el contenido
+        detailContentEl.classList.remove('hidden');
+    };
+
+    // 5. Utilidades para TTS
+    function base64ToArrayBuffer(base64) {
+        const binaryString = atob(base64);
+        const len = binaryString.length;
+        const bytes = new Uint8Array(len);
+        for (let i = 0; i < len; i++) {
+            bytes[i] = binaryString.charCodeAt(i);
+        }
+        return bytes.buffer;
+    }
+
+    function pcmToWav(pcm16, sampleRate) {
+        const numChannels = 1;
+        const bytesPerSample = 2; // 16-bit PCM
+        const blockAlign = numChannels * bytesPerSample;
+        const byteRate = sampleRate * blockAlign;
+        const dataLength = pcm16.length * bytesPerSample;
+        const buffer = new ArrayBuffer(44 + dataLength);
+        const view = new DataView(buffer);
+        
+        // RIFF chunk descriptor
+        view.setUint32(0, 0x52494646, false); // "RIFF"
+        view.setUint32(4, 36 + dataLength, true); // ChunkSize
+        view.setUint32(8, 0x57415645, false); // "WAVE"
+        
+        // FMT sub-chunk
+        view.setUint32(12, 0x666d7420, false); // "fmt "
+        view.setUint32(16, 16, true); // Subchunk1Size (16 for PCM)
+        view.setUint16(20, 1, true); // AudioFormat (1 for PCM)
+        view.setUint16(22, numChannels, true); // NumChannels
+        view.setUint32(24, sampleRate, true); // SampleRate
+        view.setUint32(28, byteRate, true); // ByteRate
+        view.setUint16(32, blockAlign, true); // BlockAlign
+        view.setUint16(34, 16, true); // BitsPerSample (16)
+        
+        // DATA sub-chunk
+        view.setUint32(36, 0x64617461, false); // "data"
+        view.setUint32(40, dataLength, true); // Subchunk2Size
+        
+        // Write the PCM data
+        let offset = 44;
+        for (let i = 0; i < pcm16.length; i++) {
+            view.setInt16(offset, pcm16[i], true);
+            offset += bytesPerSample;
+        }
+
+        return new Blob([buffer], { type: 'audio/wav' });
+    }
+
+    // 6. Integración Gemini: Generar Resumen
+    window.generateSummary = async () => {
+        if (!currentContractData) {
+            showToast("Seleccione un contrato primero.", true);
+            return;
+        }
+
+        summaryBtn.disabled = true;
+        suggestionBtn.disabled = true;
+        ttsBtn.disabled = true;
+        summaryBtn.innerHTML = '<span class="ai-loading-spinner"></span> Analizando...';
+        aiOutputEl.classList.remove('hidden');
+        aiTextEl.textContent = 'Generando resumen con Gemini...';
+        aiSourcesEl.classList.add('hidden'); // Ocultar fuentes para el resumen (no usa grounding)
+
+        const contractText = `Contrato de ${currentContractData.memberName} (${currentContractData.age} años). Tareas: 1. ${currentContractData.task1}, 2. ${currentContractData.task2}, 3. ${currentContractData.task3}. Afirmaciones: 1. Yo soy ${currentContractData.affirmation1}, 2. Yo soy ${currentContractData.affirmation2}, 3. Yo soy ${currentContractData.affirmation3}.`;
+
+        const systemPrompt = "Eres un Asistente Familiar amigable. Tu tarea es resumir un contrato familiar en español de manera concisa y motivadora. El resumen debe tener un máximo de 50 palabras y centrarse en los 3 compromisos de la sección 'Tareas' y el propósito de las 'Afirmaciones'.";
+        const userQuery = `Por favor, resume el siguiente contrato: ${contractText}`;
+        
+        const payload = {
+            contents: [{ parts: [{ text: userQuery }] }],
+            systemInstruction: { parts: [{ text: systemPrompt }] },
+        };
+
+        try {
+            const response = await fetch(GEMINI_TEXT_API, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(payload)
+            });
+
+            if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
+
+            const result = await response.json();
+            const summary = result.candidates?.[0]?.content?.parts?.[0]?.text || "No se pudo generar el resumen.";
+            
+            aiTextEl.textContent = summary;
+            showToast("Resumen de IA generado con éxito.", false);
+
+        } catch (error) {
+            console.error("Error generating summary:", error);
+            aiTextEl.textContent = "Error al conectar con la IA para generar el resumen.";
+            showToast("Error de la API de Gemini para el resumen.", true);
+        } finally {
+            summaryBtn.disabled = false;
+            suggestionBtn.disabled = false;
+            ttsBtn.disabled = false;
+            summaryBtn.innerHTML = '<span class="mr-2">📄</span> Generar Resumen';
+        }
+    };
+    
+    // 7. Integración Gemini: Generar Sugerencia de Mejora (con Grounding)
+    window.suggestContractImprovement = async () => {
+        if (!currentContractData) {
+            showToast("Seleccione un contrato primero.", true);
+            return;
+        }
+
+        suggestionBtn.disabled = true;
+        summaryBtn.disabled = true;
+        ttsBtn.disabled = true;
+        suggestionBtn.innerHTML = '<span class="ai-loading-spinner"></span> Buscando Sugerencia...';
+        aiOutputEl.classList.remove('hidden');
+        aiTextEl.textContent = 'Consultando a Gemini con información en tiempo real...';
+        aiSourcesEl.classList.add('hidden');
+        sourcesListEl.innerHTML = '';
+
+        const contractText = `Tareas: 1. ${currentContractData.task1}, 2. ${currentContractData.task2}, 3. ${currentContractData.task3}. Afirmaciones: 1. Yo soy ${currentContractData.affirmation1}, 2. Yo soy ${currentContractData.affirmation2}, 3. Yo soy ${currentContractData.affirmation3}.`;
+
+        const systemPrompt = "Eres un 'Consejero de Contratos' familiar. Analiza las tareas y afirmaciones proporcionadas. Sugiere UNA ÚNICA NUEVA tarea o afirmación que complemente mejor el contrato, basándote en las mejores prácticas de desarrollo infantil y disciplina positiva. Debes utilizar la búsqueda en Google para hacer una sugerencia práctica. El resultado debe ser solo la sugerencia (máximo dos frases) y debe empezar con: 'Te sugiero añadir:'";
+        const userQuery = `Revisa el siguiente contrato de un miembro de ${currentContractData.age} años. ¿Qué sugerencia práctica puedes dar para mejorarlo? Datos: ${contractText}`;
+        
+        const payload = {
+            contents: [{ parts: [{ text: userQuery }] }],
+            tools: [{ "google_search": {} }], // Google Search Grounding
+            systemInstruction: { parts: [{ text: systemPrompt }] },
+        };
+
+        try {
+            const response = await fetch(GEMINI_TEXT_API, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(payload)
+            });
+
+            if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
+
+            const result = await response.json();
+            const suggestion = result.candidates?.[0]?.content?.parts?.[0]?.text || "No se pudo generar la sugerencia de mejora.";
+            
+            aiTextEl.textContent = suggestion;
+
+            // Extraer fuentes de grounding
+            let sources = [];
+            const groundingMetadata = result.candidates?.[0]?.groundingMetadata;
+            if (groundingMetadata && groundingMetadata.groundingAttributions) {
+                sources = groundingMetadata.groundingAttributions
+                    .map(attribution => ({
+                        uri: attribution.web?.uri,
+                        title: attribution.web?.title,
+                    }))
+                    .filter(source => source.uri && source.title);
+            }
+
+            if (sources.length > 0) {
+                sources.forEach(source => {
+                    const li = document.createElement('li');
+                    li.innerHTML = `<a href="${source.uri}" target="_blank" class="text-blue-600 hover:text-blue-800 underline">${source.title}</a>`;
+                    sourcesListEl.appendChild(li);
+                });
+                aiSourcesEl.classList.remove('hidden');
+            }
+            
+            showToast("Sugerencia de IA generada con éxito.", false);
+
+        } catch (error) {
+            console.error("Error generating suggestion:", error);
+            aiTextEl.textContent = "Error al conectar con la IA para generar la sugerencia.";
+            showToast("Error de la API de Gemini para la sugerencia.", true);
+        } finally {
+            suggestionBtn.disabled = false;
+            summaryBtn.disabled = false;
+            ttsBtn.disabled = false;
+            suggestionBtn.innerHTML = '<span class="mr-2">💡</span> Sugerir Mejora';
+        }
+    };
+
+    
+    // 8. Integración Gemini: Texto a Voz (TTS) para Refuerzo Positivo
+    window.speakAffirmation = async () => {
+        if (!currentContractData || !currentContractData.affirmation1) {
+            showToast("Seleccione un contrato con afirmaciones válidas.", true);
+            return;
+        }
+        
+        // Seleccionamos la primera afirmación para el refuerzo
+        const affirmation = currentContractData.affirmation1;
+        const ttsPrompt = `Di con un tono alegre y motivador en español de México: ¡Excelente! Recuerda, ${affirmation}.`;
+
+        ttsBtn.disabled = true;
+        summaryBtn.disabled = true;
+        suggestionBtn.disabled = true;
+        ttsBtn.innerHTML = '<span class="ai-loading-spinner"></span> Generando Audio...';
+        ttsAudioEl.classList.add('hidden');
+
+        const payload = {
+            contents: [{ parts: [{ text: ttsPrompt }] }],
+            generationConfig: {
+                responseModalities: ["AUDIO"],
+                speechConfig: {
+                    voiceConfig: {
+                        prebuiltVoiceConfig: { voiceName: "Puck" } // Voz alegre y optimista
+                    }
+                }
+            },
+        };
+
+        try {
+            const response = await fetch(GEMINI_TTS_API, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(payload)
+            });
+
+            if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
+
+            const result = await response.json();
+            const part = result?.candidates?.[0]?.content?.parts?.[0];
+            const audioData = part?.inlineData?.data;
+            const mimeType = part?.inlineData?.mimeType;
+
+            if (audioData && mimeType && mimeType.startsWith("audio/L16")) {
+                const sampleRateMatch = mimeType.match(/rate=(\d+)/);
+                const sampleRate = sampleRateMatch ? parseInt(sampleRateMatch[1], 10) : 24000;
+                
+                const pcmData = base64ToArrayBuffer(audioData);
+                const pcm16 = new Int16Array(pcmData);
+                const wavBlob = pcmToWav(pcm16, sampleRate);
+                const audioUrl = URL.createObjectURL(wavBlob);
+                
+                ttsAudioEl.src = audioUrl;
+                ttsAudioEl.classList.remove('hidden');
+                ttsAudioEl.play();
+
+                showToast("Audio de refuerzo generado y reproduciéndose.", false);
+            } else {
+                throw new Error("Respuesta de audio inválida o incompleta.");
+            }
+
+        } catch (error) {
+            console.error("Error generating TTS:", error);
+            showToast("Error de la API de Gemini para Texto a Voz (TTS).", true);
+        } finally {
+            ttsBtn.disabled = false;
+            summaryBtn.disabled = false;
+            suggestionBtn.disabled = false;
+            ttsBtn.innerHTML = '<span class="mr-2">🔊</span> Refuerzo Positivo (Voz)';
+        }
+    };
+
+
+    // 9. Función para SIMULAR el envío de un nuevo contrato (sin cambios)
+    window.simulateSubmission = async () => {
+        if (!isAuthReady) {
+            showToast("La aplicación aún no está conectada a la base de datos.", true);
+            return;
+        }
+
+        const randomData = generateRandomContractData();
+        
+        try {
+            // Guardar en la colección pública
+            const docRef = await addDoc(collection(db, PUBLIC_COLLECTION_PATH), randomData);
+            showToast(`¡Contrato simulado enviado! ID: ${docRef.id}`, false);
+        } catch (e) {
+            console.error("Error simulating document submission: ", e);
+            showToast("Error al simular el envío del contrato.", true);
+        }
+    };
+    
+    // Función para generar datos de contrato aleatorios para la simulación (sin cambios)
+    const generateRandomContractData = () => {
+        const names = ["Sofía", "Martín", "Elena", "Javier", "Lucía", "Alejandro"];
+        const ages = [6, 8, 10, 12, 14, 16];
+        const tasks = [
+            "Poner la mesa a diario", "Recoger los juguetes después de jugar", "Guardar la ropa limpia en el armario", 
+            "Alimentar a la mascota por la mañana", "Hacer la cama antes de salir", "Lavar sus platos después de comer"
+        ];
+        const affirmations = [
+            "Soy un buen oyente y respeto a los demás", "Soy responsable de mis tareas y las cumplo", "Soy paciente y amable con mi familia", 
+            "Ayudo a mi familia porque somos un equipo", "Soy fuerte y valiente para enfrentar mis retos"
+        ];
+        
+        const randomItem = (arr) => arr[Math.floor(Math.random() * arr.length)];
+        const today = new Date().toLocaleDateString('es-ES', { year: 'numeric', month: 'long', day: 'numeric' });
+
+        return {
+            memberName: randomItem(names),
+            age: randomItem(ages),
+            task1: randomItem(tasks),
+            task2: randomItem(tasks),
+            task3: randomItem(tasks),
+            scheduleTime: `Lunes, Miércoles, Viernes de ${Math.floor(Math.random() * 4) + 6} PM`,
+            scheduleNotes: "Recordar hacerlo antes de la cena.",
+            affirmation1: randomItem(affirmations),
+            affirmation2: randomItem(affirmations),
+            affirmation3: randomItem(affirmations),
+            signature: `Firma digital de ${randomItem(names)}`,
+            date: today,
+        };
+    };
+
+    // Inicializar todo al cargar la ventana
+    window.onload = initializeFirebase;
+</script>
+</body>
+</html>
